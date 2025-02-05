@@ -1,18 +1,31 @@
 use std::os::raw::c_int;
 
 use super::{
-    affine2p_penalties_t, affine_penalties_t, alignment_scope_t,
-    alignment_scope_t_compute_alignment, alignment_scope_t_compute_score, distance_metric_t,
-    distance_metric_t_edit, distance_metric_t_gap_affine, distance_metric_t_gap_affine_2p,
-    distance_metric_t_gap_linear, distance_metric_t_indel, linear_penalties_t,
-    wavefront_aligner_attr_default, wavefront_aligner_attr_t, wavefront_heuristic_t,
+    affine2p_penalties_t, affine_penalties_t, alignment_form_t, alignment_scope_t,
+    alignment_scope_t_compute_alignment, alignment_scope_t_compute_score, alignment_system_t,
+    distance_metric_t, distance_metric_t_edit, distance_metric_t_gap_affine,
+    distance_metric_t_gap_affine_2p, distance_metric_t_gap_linear, distance_metric_t_indel,
+    linear_penalties_t, wavefront_aligner_attr_t, wavefront_heuristic_t,
+    wavefront_memory_t_wavefront_memory_high, wavefront_plot_attr_t,
 };
 
 use crate::alignment::{AlignmentScope, DistanceMetric, MemoryMode};
 
 impl Default for wavefront_aligner_attr_t {
     fn default() -> Self {
-        unsafe { wavefront_aligner_attr_default }
+        Self {
+            distance_metric: distance_metric_t_gap_affine,
+            alignment_scope: alignment_scope_t_compute_alignment,
+            alignment_form: alignment_form_t::default(),
+            linear_penalties: linear_penalties_t::default(),
+            affine_penalties: affine_penalties_t::default(),
+            affine2p_penalties: affine2p_penalties_t::default(),
+            heuristic: wavefront_heuristic_t::default(),
+            memory_mode: wavefront_memory_t_wavefront_memory_high,
+            plot: wavefront_plot_attr_t::default(),
+            system: alignment_system_t::default(),
+            mm_allocator: std::ptr::null_mut(),
+        }
     }
 }
 
@@ -88,10 +101,43 @@ impl wavefront_aligner_attr_t {
     pub fn set_alignment_scope(&mut self, scope: AlignmentScope) {
         self.alignment_scope = scope as alignment_scope_t
     }
-    
+
     #[inline]
     pub fn set_memory_mode(&mut self, memory_mode: MemoryMode) {
         self.memory_mode = memory_mode as u32
     }
 }
 
+impl Default for linear_penalties_t {
+    fn default() -> Self {
+        Self {
+            match_: 0,
+            mismatch: 4,
+            indel: 2,
+        }
+    }
+}
+
+impl Default for affine_penalties_t {
+    fn default() -> Self {
+        Self {
+            match_: 0,
+            mismatch: 4,
+            gap_opening: 6,
+            gap_extension: 2,
+        }
+    }
+}
+
+impl Default for affine2p_penalties_t {
+    fn default() -> Self {
+        Self {
+            match_: 0,
+            mismatch: 4,
+            gap_opening1: 6,
+            gap_extension1: 2,
+            gap_opening2: 24,
+            gap_extension2: 1,
+        }
+    }
+}

@@ -4,7 +4,10 @@
 #![allow(unused)]
 include!(concat!(env!("OUT_DIR"), "/bindings_wfa.rs"));
 
+mod aligner;
+mod alignment;
+mod attributes;
 mod cigar;
 mod heuristic;
-mod aligner;
-mod attributes;
+mod plot;
+mod profile_timer;
