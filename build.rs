@@ -19,33 +19,34 @@
 
 extern crate bindgen;
 
-use std::{env, fs, io, path::PathBuf, process::Command};
+use std::{env, fs, io, path::{Path, PathBuf}, process::Command};
 
-fn wfa_build(wfa_dir: &str, out: &str) -> Result<(), io::Error> {
-    let out_dir = PathBuf::from(out);
+fn wfa_build(wfa_dir: &str, out_dir: &Path) -> Result<(), io::Error> {
 
+    let wfa_src = PathBuf::from(wfa_dir).canonicalize().unwrap();
+    
     // Remove output directory if it exists
-    if let Err(e) = fs::remove_dir_all(&out_dir) {
+    if let Err(e) = fs::remove_dir_all(out_dir) {
         if e.kind() != io::ErrorKind::NotFound {
             return Err(e);
         }
     }
 
     // Create output directory
-    fs::create_dir(&out_dir)?;
+    fs::create_dir(out_dir)?;
 
     // Setup build
     Command::new("cmake")
-        .arg(format!("../{wfa_dir}").as_str())
+        .arg(format!("{}", wfa_src.display()).as_str())
         .arg("-DCMAKE_BUILD_TYPE=Release")
-        .current_dir(&out_dir)
+        .current_dir(out_dir)
         .output()?;
 
     // And build
     Command::new("cmake")
         .arg("--build")
         .arg(".")
-        .current_dir(&out_dir)
+        .current_dir(out_dir)
         .output()?;
 
     Ok(())
@@ -78,16 +79,17 @@ fn wfa(wfa_dir: &str) {
 
 fn main() -> Result<(), io::Error> {
     let wfa_dir = "WFA2-lib";
-    let out = "libwfa2";
+    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let out = out_dir.join(wfa_dir);
 
     // The directory of the WFA libraries, added to the search path.
-    println!("cargo:rustc-link-search={out}");
+    println!("cargo:rustc-link-search={}", out.display());
     // Link the `wfa-lib` library.
     println!("cargo:rustc-link-lib=static=wfa2");
     // Invalidate the built crate whenever the version changes
     println!("cargo:rerun-if-changed={wfa_dir}/VERSION.txt");
 
-    wfa_build(wfa_dir, out)?;
+    wfa_build(wfa_dir, &out)?;
 
     wfa(wfa_dir);
 
