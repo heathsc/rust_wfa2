@@ -21,7 +21,7 @@ impl Drop for WfaAligner {
 }
 
 impl WfaAligner {
-    pub fn new(attributes: &mut Attributes) -> Self {
+    pub fn new(attributes: &Attributes) -> Self {
         let inner = NonNull::new(unsafe { wavefront_aligner_new(attributes) })
             .expect("wf_aligner is NULL");
         Self {

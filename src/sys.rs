@@ -6,7 +6,7 @@ include!(concat!(env!("OUT_DIR"), "/bindings_wfa.rs"));
 
 mod aligner;
 mod alignment;
-mod attributes;
+pub mod attributes;
 mod cigar;
 mod heuristic;
 mod plot;
