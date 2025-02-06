@@ -22,7 +22,7 @@ mod test {
         attributes.set_affine_penalties(0, 4, 6, 2);
         attributes.set_alignment_scope(AlignmentScope::Alignment);
 
-        let mut aligner = WfaAligner::new(&mut attributes);
+        let mut aligner = WfaAligner::new(&attributes);
 
         match aligner.align_str(pattern, text) {
             Ok(s) => println!("OK: {s}"),
@@ -56,7 +56,7 @@ mod test {
         attributes.set_affine_penalties(0, 4, 6, 2);
         attributes.heuristic().set_wfadaptive(10, 50, 1);
 
-        let mut aligner = WfaAligner::new(&mut attributes);
+        let mut aligner = WfaAligner::new(&attributes);
 
         match aligner.align_str(pattern, text) {
             Ok(s) => println!("OK: {s}"),
@@ -94,7 +94,7 @@ mod test {
         attributes.set_affine_penalties(0, 4, 6, 2);
         attributes.set_alignment_scope(AlignmentScope::Alignment);
         attributes.set_memory_mode(crate::alignment::MemoryMode::Low);
-        let mut aligner = WfaAligner::new(&mut attributes);
+        let mut aligner = WfaAligner::new(&attributes);
 
         aligner.set_alignment_free_ends(0, 0, 30, 30);
         match aligner.align_str(pattern, text) {
