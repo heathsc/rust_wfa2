@@ -7,4 +7,3 @@ edition = "2021"
 bindgen = "0.71.1"
 
 [dependencies]
-fopencookie = "~0.1"

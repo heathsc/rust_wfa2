@@ -38,12 +38,6 @@ mod test {
                 .cigar()
                 .score_gap_affine(attributes.affine_penalties())
         );
-        println!(
-            "{}",
-            aligner
-                .cigar_mut()
-                .write_pretty(pattern.as_bytes(), text.as_bytes())
-        );
         assert_eq!(aligner.cigar().score(), -24);
     }
 
@@ -111,12 +105,7 @@ mod test {
                 .cigar()
                 .score_gap_affine(attributes.affine_penalties())
         );
-        println!(
-            "{}",
-            aligner
-                .cigar_mut()
-                .write_pretty(pattern.as_bytes(), text.as_bytes())
-        );
+
         assert_eq!(aligner.cigar().score(), -24);
     }
 }

@@ -3,8 +3,6 @@ use std::{
     os::raw::{c_char, c_int},
 };
 
-use fopencookie::IoCStream;
-
 use super::{
     affine2p_penalties_t, affine_penalties_t, cigar_print_pretty, cigar_score_edit,
     cigar_score_gap_affine, cigar_score_gap_affine2p, cigar_score_gap_linear, cigar_sprint,
@@ -59,32 +57,6 @@ impl cigar_t {
     #[inline]
     pub fn score_gap_affine2p(&self, penalties: &affine2p_penalties_t) -> c_int {
         unsafe { cigar_score_gap_affine2p(self, penalties) }
-    }
-
-    pub fn write_pretty(&mut self, pattern: &[u8], text: &[u8]) -> String {
-        let u8_to_i8 = |s: &[u8]| (s as *const [u8] as *const i8);
-
-        let mut buf = String::new();
-        {
-            let v = unsafe { buf.as_mut_vec() };
-
-            let stream = IoCStream::writer(v);
-            unsafe {
-                cigar_print_pretty(
-                    stream.as_ptr() as *mut _IO_FILE,
-                    self,
-                    u8_to_i8(pattern),
-                    pattern.len() as c_int,
-                    u8_to_i8(text),
-                    text.len() as c_int,
-                )
-            }
-        }
-        assert!(
-            buf.as_bytes().is_ascii(),
-            "Pretty printer returned non-ascii characters"
-        );
-        buf
     }
 
     pub fn sam_cigar(&mut self, show_mismatches: bool) -> String {
