@@ -1,7 +1,10 @@
 use std::os::raw::c_int;
 
 use super::{
-    cigar_t, wavefront_align, wavefront_align_status_t, wavefront_aligner_set_alignment_end_to_end, wavefront_aligner_set_alignment_extension, wavefront_aligner_set_alignment_free_ends, wavefront_aligner_t, wavefront_pos_t
+    cigar_t, wavefront_align, wavefront_align_status_t, wavefront_aligner_attr_t,
+    wavefront_aligner_set_alignment_end_to_end, wavefront_aligner_set_alignment_extension,
+    wavefront_aligner_set_alignment_free_ends, wavefront_aligner_t, wavefront_heuristic_t,
+    wavefront_pos_t,
 };
 use crate::error::*;
 
@@ -25,17 +28,17 @@ impl wavefront_aligner_t {
     pub fn set_verbose(&mut self, x: c_int) {
         self.system.verbose = x
     }
-    
+
     #[inline]
     pub fn align_str(&mut self, pattern: &str, text: &str) -> Result<WfaStatus, WfaError> {
         self.align(pattern.as_bytes(), text.as_bytes())
     }
-    
+
     #[inline]
     pub fn end_pos(&self) -> &wavefront_pos_t {
         &self.alignment_end_pos
     }
-    
+
     #[inline]
     pub fn cigar(&self) -> &cigar_t {
         let p = self.cigar;
@@ -49,33 +52,58 @@ impl wavefront_aligner_t {
         assert!(!p.is_null());
         unsafe { &mut *p }
     }
-    
+
     #[inline]
     pub fn set_alignment_end_to_end(&mut self) {
         unsafe { wavefront_aligner_set_alignment_end_to_end(self) }
     }
-    
+
     #[inline]
-    pub fn set_alignment_free_ends(&mut self, pattern_begin_free: c_int, pattern_end_free: c_int, text_begin_free: c_int, text_end_free: c_int) {
-        unsafe { wavefront_aligner_set_alignment_free_ends(self, pattern_begin_free, pattern_end_free, text_begin_free, text_end_free) }
+    pub fn set_alignment_free_ends(
+        &mut self,
+        pattern_begin_free: c_int,
+        pattern_end_free: c_int,
+        text_begin_free: c_int,
+        text_end_free: c_int,
+    ) {
+        unsafe {
+            wavefront_aligner_set_alignment_free_ends(
+                self,
+                pattern_begin_free,
+                pattern_end_free,
+                text_begin_free,
+                text_end_free,
+            )
+        }
     }
-    
+
     #[inline]
     pub fn set_alignment_extension(&mut self) {
         unsafe { wavefront_aligner_set_alignment_extension(self) }
     }
-    
+
+    #[inline]
     pub fn status(&self) -> &wavefront_align_status_t {
         &self.align_status
+    }
+
+    #[inline]
+    pub fn heuristic(&self) -> &wavefront_heuristic_t {
+        &self.heuristic
+    }
+
+    #[inline]
+    pub fn heuristic_mut(&mut self) -> &mut wavefront_heuristic_t {
+        &mut self.heuristic
     }
 }
 
 impl wavefront_pos_t {
-    #[inline] 
+    #[inline]
     pub fn offsets(&self) -> (c_int, c_int) {
         (self.offset - self.k, self.offset)
     }
-    
+
     #[inline]
     pub fn score(&self) -> c_int {
         self.score
@@ -87,22 +115,22 @@ impl wavefront_align_status_t {
     pub fn score(&self) -> c_int {
         self.score
     }
-    
+
     #[inline]
     pub fn status(&self) -> c_int {
         self.status
     }
-    
+
     #[inline]
     pub fn num_null_steps(&self) -> c_int {
         self.num_null_steps
     }
-    
+
     #[inline]
     pub fn memory_used(&self) -> u64 {
         self.memory_used
     }
-    
+
     #[inline]
     pub fn dropped(&self) -> bool {
         self.dropped
