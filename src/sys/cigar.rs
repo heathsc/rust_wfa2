@@ -16,6 +16,16 @@ impl cigar_t {
     }
 
     #[inline]
+    pub fn end_v(&self) -> c_int {
+        self.end_v
+    }
+    
+    #[inline]
+    pub fn end_h(&self) -> c_int {
+        self.end_h
+    }
+    
+    #[inline]
     pub fn begin_offset(&self) -> usize {
         self.begin_offset as usize
     }

@@ -27,7 +27,7 @@ impl wavefront_aligner_t {
     pub fn align_str(&mut self, pattern: &str, text: &str) -> Result<WfaStatus, WfaError> {
         self.align(pattern.as_bytes(), text.as_bytes())
     }
-
+    
     #[inline]
     pub fn cigar(&self) -> &cigar_t {
         let p = self.cigar;
