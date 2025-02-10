@@ -3,7 +3,7 @@ use std::os::raw::c_int;
 use super::{
     cigar_t, wavefront_align, wavefront_aligner_set_alignment_end_to_end,
     wavefront_aligner_set_alignment_extension, wavefront_aligner_set_alignment_free_ends,
-    wavefront_aligner_t,
+    wavefront_aligner_t, wavefront_pos_t,
 };
 use crate::error::*;
 
@@ -26,6 +26,11 @@ impl wavefront_aligner_t {
     #[inline]
     pub fn align_str(&mut self, pattern: &str, text: &str) -> Result<WfaStatus, WfaError> {
         self.align(pattern.as_bytes(), text.as_bytes())
+    }
+    
+    #[inline]
+    pub fn end_pos(&self) -> &wavefront_pos_t {
+        &self.alignment_end_pos
     }
     
     #[inline]
@@ -55,5 +60,17 @@ impl wavefront_aligner_t {
     #[inline]
     pub fn set_alignment_extension(&mut self) {
         unsafe { wavefront_aligner_set_alignment_extension(self) }
+    }
+}
+
+impl wavefront_pos_t {
+    #[inline] 
+    pub fn offsets(&self) -> (c_int, c_int) {
+        (self.offset - self.k, self.offset)
+    }
+    
+    #[inline]
+    pub fn score(&self) -> c_int {
+        self.score
     }
 }
