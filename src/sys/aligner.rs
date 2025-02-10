@@ -22,6 +22,11 @@ impl wavefront_aligner_t {
     }
 
     #[inline]
+    pub fn set_verbose(&mut self, x: c_int) {
+        self.system.verbose = x
+    }
+    
+    #[inline]
     pub fn align_str(&mut self, pattern: &str, text: &str) -> Result<WfaStatus, WfaError> {
         self.align(pattern.as_bytes(), text.as_bytes())
     }
