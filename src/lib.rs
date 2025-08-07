@@ -5,7 +5,6 @@ pub mod error;
 pub(crate) mod sys;
 
 mod test {
-    use std::str::SplitTerminator;
 
     #[allow(unused_imports)]
     use super::{
